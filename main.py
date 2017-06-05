@@ -30,7 +30,8 @@ def init(data):
     # difficulty
     data.difficulty = 0
     data.maxDifficulty = 0
-    data.timeMax = 5 # seconds
+    data.timeMax = 2500 # milliseconds
+                        # based on Davidson et al.
     data.timeRemaining = data.timeMax # starting out at timeMax, to be reset every attempt
 
     # probability table
@@ -669,7 +670,7 @@ def run(width=canvasWidth, height=canvasHeight):
     data = Struct()
     data.width = width
     data.height = height
-    data.timerDelay = 1000 # milliseconds
+    data.timerDelay = 100 # milliseconds
     root = Tk()
     init(data)
     # create the root and the canvas
