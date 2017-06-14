@@ -1,6 +1,8 @@
 # started from barebones tkinter starter code from CMU's 15-112 by David Kosbie
 
-# added Nick
+# new comment
+
+
 
 # Global variables: canvas width and height
 canvasWidth = 1280
