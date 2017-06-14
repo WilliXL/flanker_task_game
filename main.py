@@ -7,7 +7,7 @@ canvasWidth = 1280
 canvasHeight = 720
 buffer = 40
 
-from Tkinter import *
+from tkinter import *
 import random
 
 def chooseTable(data):
