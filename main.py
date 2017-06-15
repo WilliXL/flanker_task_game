@@ -69,7 +69,7 @@ def init(data):
             [5,"Incongruent",1500]
         ]
     ]
-    data.level = -1
+    data.level = random.randint(0,4)
 
     # score
     data.correct = 0
@@ -96,12 +96,12 @@ def init(data):
 
 def loadFishImages(data):
     data.images = []
-    data.images.append(PhotoImage(file="CR.png"))
-    data.images.append(PhotoImage(file="CL.png"))
-    data.images.append(PhotoImage(file="NR.png"))
-    data.images.append(PhotoImage(file="NL.png"))
-    data.images.append(PhotoImage(file="ICR.png"))
-    data.images.append(PhotoImage(file="ICL.png"))
+    data.images.append(PhotoImage(file="NR.gif"))
+    data.images.append(PhotoImage(file="NL.gif"))
+    data.images.append(PhotoImage(file="CR.gif"))
+    data.images.append(PhotoImage(file="CL.gif"))
+    data.images.append(PhotoImage(file="ICR.gif"))
+    data.images.append(PhotoImage(file="ICL.gif"))
 
 ########################
 # mode dispatcher
@@ -450,11 +450,11 @@ def customizeRedrawAll(canvas, data):
 
 def helpDDRMousePressed(event, data):
     data.tableNumber = chooseTable(data)
-    data.timeMax = data.tables[data.tableNumber][2]
+    data.timeMax = 2500 #TODO
     data.mode = "playGame"
 def helpDDRKeyPressed(event, data):
     data.tableNumber = chooseTable(data)
-    data.timeMax = data.tables[data.tableNumber][2]
+    data.timeMax = 2500 #TODO
     data.mode = "playGame"
 def helpDDRTimerFired(data):
     pass
@@ -481,11 +481,11 @@ def helpDDRRedrawAll(canvas, data):
 
 def helpKeyMousePressed(event, data):
     data.tableNumber = chooseTable(data)
-    data.timeMax = data.tables[data.tableNumber][2]
+    data.timeMax = 2500 #TODO
     data.mode = "playGame"
 def helpKeyKeyPressed(event, data):
     data.tableNumber = chooseTable(data)
-    data.timeMax = data.tables[data.tableNumber][2]
+    data.timeMax = 2500 #TODO
     data.mode = "playGame"
 def helpKeyTimerFired(data):
     pass
@@ -572,13 +572,24 @@ def playGameRedrawAll(canvas, data):
     ###############
 
     # if it's neutral (only 1 fish in the entire matrix)
-    if (data.tables[data.level][0] == 1 and data.tables[data.tableNumber][1] == 1):
-        if (data.tables[data.tableNumber][3] == "Left"):
-            image = data.images[0]
-        else: # direction is Right
-            image = data.images[1]
-        canvas.create_image(data.width/2, data.height/2, image=image)
+    # data.images = [NR,NL,CR,CL,ICR,ICL]
+    data.level = random.randint(0,4)
+    configurations = data.tables[data.level]
+    conf = random.choice(configurations)
+    choose = -1
+    if (conf[0] == 1): # it's neutral
+        choose = random.randint(0,1)
+        image = data.images[choose]
+    if (conf[0] == 5): # not netural
+        if (conf[1] == "Congruent"):
+            choose = random.randint(2,3)
+            image = data.images[choose]
+        if (conf[1] == "Incongruent"):
+            choose = random.randint(4,5)
+            image = data.images[choose]
 
+    canvas.create_image(data.width/2, data.height/2, image=image)
+        
 #######################
 # incorrectMode Mode
 #######################
@@ -697,7 +708,7 @@ def run(width=canvasWidth, height=canvasHeight):
     data = Struct()
     data.width = width
     data.height = height
-    data.timerDelay = 100 # milliseconds
+    data.timerDelay = 1000 # milliseconds
     root = Tk()
     init(data)
     # create the root and the canvas
