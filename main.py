@@ -69,7 +69,7 @@ def init(data):
             [5,"Incongruent",1500]
         ]
     ]
-    data.tableNumber = -1
+    data.level = -1
 
     # score
     data.correct = 0
@@ -96,8 +96,12 @@ def init(data):
 
 def loadFishImages(data):
     data.images = []
-    data.images.append(PhotoImage(file="Fish_Left.gif"))
-    data.images.append(PhotoImage(file="Fish_Right.gif"))
+    data.images.append(PhotoImage(file="CR.png"))
+    data.images.append(PhotoImage(file="CL.png"))
+    data.images.append(PhotoImage(file="NR.png"))
+    data.images.append(PhotoImage(file="NL.png"))
+    data.images.append(PhotoImage(file="ICR.png"))
+    data.images.append(PhotoImage(file="ICL.png"))
 
 ########################
 # mode dispatcher
@@ -568,7 +572,7 @@ def playGameRedrawAll(canvas, data):
     ###############
 
     # if it's neutral (only 1 fish in the entire matrix)
-    if (data.tables[data.tableNumber][0] == 1 and data.tables[data.tableNumber][1] == 1):
+    if (data.tables[data.level][0] == 1 and data.tables[data.tableNumber][1] == 1):
         if (data.tables[data.tableNumber][3] == "Left"):
             image = data.images[0]
         else: # direction is Right
