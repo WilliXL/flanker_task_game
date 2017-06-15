@@ -38,16 +38,36 @@ def init(data):
     data.timeRemaining = data.timeMax # starting out at timeMax, to be reset every attempt
 
     # probability table
-    # data.tableTemplate = [NumberWidth, NumberHeight, "TimeMax", "Left/Right"]
+    # data.tableTemplate = [NumberWidth, "Congruent"/"Incongruent", data.timeMax]
     data.tables = [
-        [1,1,5,"Left"],  # neutral left 
-        [1,1,5,"Right"], # neutral right
-        [1,1,4,"Left"],  # neutral left 
-        [1,1,4,"Right"], # neutral right
-        [1,1,3,"Left"],  # neutral left 
-        [1,1,3,"Right"], # neutral right
-        [1,1,2,"Left"],  # neutral left 
-        [1,1,2,"Right"], # neutral right
+        # level 1
+        [
+            [1,"Congruent",2500]
+        ],
+        
+        # level 2
+        [
+            [5,"Congruent",2500],
+            [1,"Congruent",2000]
+        ],
+
+        # level 3
+        [
+            [5,"Incongruent",2500],
+            [5,"Congruent",2000],
+            [1, "Congruent",1500]
+        ],
+
+        # level 4
+        [
+            [5,"Incongruent",2000],
+            [5,"Congruent",1500]
+        ],
+
+        # level 5
+        [
+            [5,"Incongruent",1500]
+        ]
     ]
     data.tableNumber = -1
 
