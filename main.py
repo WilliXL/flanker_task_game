@@ -40,18 +40,38 @@ def init(data):
     data.timeRemaining = data.timeMax # starting out at timeMax, to be reset every attempt
 
     # probability table
-    # data.tableTemplate = [NumberWidth, NumberHeight, "TimeMax", "Left/Right"]
+    # data.tableTemplate = [NumberWidth, "Congruent"/"Incongruent", data.timeMax]
     data.tables = [
-        [1,1,5,"Left"],  # neutral left 
-        [1,1,5,"Right"], # neutral right
-        [1,1,4,"Left"],  # neutral left 
-        [1,1,4,"Right"], # neutral right
-        [1,1,3,"Left"],  # neutral left 
-        [1,1,3,"Right"], # neutral right
-        [1,1,2,"Left"],  # neutral left 
-        [1,1,2,"Right"], # neutral right
+        # level 1
+        [
+            [1,"Congruent",2500]
+        ],
+        
+        # level 2
+        [
+            [5,"Congruent",2500],
+            [1,"Congruent",2000]
+        ],
+
+        # level 3
+        [
+            [5,"Incongruent",2500],
+            [5,"Congruent",2000],
+            [1, "Congruent",1500]
+        ],
+
+        # level 4
+        [
+            [5,"Incongruent",2000],
+            [5,"Congruent",1500]
+        ],
+
+        # level 5
+        [
+            [5,"Incongruent",1500]
+        ]
     ]
-    data.tableNumber = -1
+    data.level = random.randint(0,4)
 
     # score
     data.correct = 0
@@ -78,8 +98,12 @@ def init(data):
 
 def loadFishImages(data):
     data.images = []
-    data.images.append(PhotoImage(file="Fish_Left.gif"))
-    data.images.append(PhotoImage(file="Fish_Right.gif"))
+    data.images.append(PhotoImage(file="NR.gif"))
+    data.images.append(PhotoImage(file="NL.gif"))
+    data.images.append(PhotoImage(file="CR.gif"))
+    data.images.append(PhotoImage(file="CL.gif"))
+    data.images.append(PhotoImage(file="ICR.gif"))
+    data.images.append(PhotoImage(file="ICL.gif"))
 
 ########################
 # mode dispatcher
@@ -594,6 +618,38 @@ def customizeRedrawAll(canvas, data):
         canvas.create_text(data.width/2, data.height/9+530, text = "Press Space again to go back to the Main Menu", fill=data.fontColor, font= "%s 28" %data.fonts[data.font])
 
 
+<<<<<<< HEAD
+=======
+def helpDDRMousePressed(event, data):
+    data.tableNumber = chooseTable(data)
+    data.timeMax = 2500 #TODO
+    data.mode = "playGame"
+def helpDDRKeyPressed(event, data):
+    data.tableNumber = chooseTable(data)
+    data.timeMax = 2500 #TODO
+    data.mode = "playGame"
+def helpDDRTimerFired(data):
+    pass
+def helpDDRRedrawAll(canvas, data):
+    canvas.create_rectangle(0,0,data.width,data.height, fill=data.bgColor) # background
+    canvas.create_text(data.width/2, data.height/8, text = "Instructions", fill=data.fontColor, 
+                       font = "%s 36" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*2/8, 
+                       text = "A lot of fish with arrows in them are going to pop up.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*3/8, 
+                       text = "Concentrate only on the middle fish.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*4/8, 
+                       text = "Ignore any other fish!!", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*5/8, 
+                       text = "If the arrow is pointing left step on the left pad.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*6/8, 
+                       text = "If the arrow is pointing right step on the right pad.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*7/8, 
+                       text = "Ready? Press any key to play", fill=data.fontColor, font = "%s 24" %data.fonts[data.font])
+>>>>>>> 83976d8ed6659c41cbe75e39a517fb2758ea0a57
+
+
+<<<<<<< HEAD
 
 
 
@@ -605,8 +661,34 @@ def customizeRedrawAll(canvas, data):
 
 
 
-
-
+=======
+def helpKeyMousePressed(event, data):
+    data.tableNumber = chooseTable(data)
+    data.timeMax = 2500 #TODO
+    data.mode = "playGame"
+def helpKeyKeyPressed(event, data):
+    data.tableNumber = chooseTable(data)
+    data.timeMax = 2500 #TODO
+    data.mode = "playGame"
+def helpKeyTimerFired(data):
+    pass
+def helpKeyRedrawAll(canvas, data):
+    canvas.create_rectangle(0,0,data.width,data.height, fill=data.bgColor) # background
+    canvas.create_text(data.width/2, data.height/8, text = "Instructions", 
+                       fill=data.fontColor, font = "%s 36" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*2/8, 
+                       text = "A lot of fish with arrows in them are going to pop up.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*3/8, 
+                       text = "Concentrate only on the middle fish.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*4/8, 
+                       text = "Ignore any other fish!!", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*5/8, 
+                       text = "If the arrow is pointing left press the letter e.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*6/8, 
+                       text = "If the arrow is pointing right press the letter i.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*7/8, 
+                       text = "Ready? Press any key to play", fill=data.fontColor, font = "%s 24" %data.fonts[data.font])
+>>>>>>> 83976d8ed6659c41cbe75e39a517fb2758ea0a57
 
 #################
 # playGame Mode
@@ -674,13 +756,24 @@ def playGameRedrawAll(canvas, data):
     ###############
 
     # if it's neutral (only 1 fish in the entire matrix)
-    if (data.tables[data.tableNumber][0] == 1 and data.tables[data.tableNumber][1] == 1):
-        if (data.tables[data.tableNumber][3] == "Left"):
-            image = data.images[0]
-        else: # direction is Right
-            image = data.images[1]
-        canvas.create_image(data.width/2, data.height/2, image=image)
+    # data.images = [NR,NL,CR,CL,ICR,ICL]
+    data.level = random.randint(0,4)
+    configurations = data.tables[data.level]
+    conf = random.choice(configurations)
+    choose = -1
+    if (conf[0] == 1): # it's neutral
+        choose = random.randint(0,1)
+        image = data.images[choose]
+    if (conf[0] == 5): # not netural
+        if (conf[1] == "Congruent"):
+            choose = random.randint(2,3)
+            image = data.images[choose]
+        if (conf[1] == "Incongruent"):
+            choose = random.randint(4,5)
+            image = data.images[choose]
 
+    canvas.create_image(data.width/2, data.height/2, image=image)
+        
 #######################
 # incorrectMode Mode
 #######################
@@ -811,7 +904,7 @@ def run(width=canvasWidth, height=canvasHeight):
     data = Struct()
     data.width = width
     data.height = height
-    data.timerDelay = 100 # milliseconds
+    data.timerDelay = 1000 # milliseconds
     root = Tk()
     init(data)
     # create the root and the canvas
