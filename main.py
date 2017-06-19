@@ -257,13 +257,18 @@ def gameModeRedrawAll(canvas, data):
 ##################
 
 def helpDDRMousePressed(event, data):
-    data.tableNumber = chooseTable(data)
-    data.timeMax = data.tables[data.tableNumber][2]
-    data.mode = "ready"
+    # data.tableNumber = chooseTable(data)
+    # data.timeMax = data.tables[data.tableNumber][2]
+    if (((data.width/2-100) <= event.x <=(data.width/2+100)) and ((data.height-250) <= event.y <=(data.height-200))):
+
+        data.mode= "ready"
+        print(data.mode)
+
 def helpDDRKeyPressed(event, data):
-    data.tableNumber = chooseTable(data)
-    data.timeMax = data.tables[data.tableNumber][2]
-    data.mode = "ready"
+    # data.tableNumber = chooseTable(data)
+    # data.timeMax = data.tables[data.tableNumber][2]
+    # data.mode = "ready"
+    pass
 def helpDDRTimerFired(data):
     pass
 def helpDDRRedrawAll(canvas, data):
@@ -285,22 +290,31 @@ def helpDDRRedrawAll(canvas, data):
     canvas.create_text(data.width/2, data.height*7/8, 
                        text = "Ready? Press any key to play", fill=data.fontColor, font = "%s 24" %data.fonts[data.font])
 
+    canvas.create_rectangle(data.width/2-100, data.height-250, data.width/2+100, data.height-200, fill="yellow" )
+    canvas.create_text(data.width/2, data.height-225, text="ready")
+
+
+
+
+
 #################
 # helpKey Mode
 #################
 
 def helpKeyMousePressed(event, data):
-    data.tableNumber = chooseTable(data)
-    data.timeMax = data.tables[data.tableNumber][2]
-    data.mode = "ready"
+    # data.tableNumber = chooseTable(data)
+    # data.timeMax = data.tables[data.tableNumber][2]
+    if (((data.width/2-100) <= event.x <=(data.width/2+100)) and ((data.height-250) <= event.y <=(data.height-200))):
+
+        data.mode= "ready"
 def helpKeyKeyPressed(event, data):
-    data.tableNumber = chooseTable(data)
-    data.timeMax = data.tables[data.tableNumber][2]
-    data.mode = "ready"
+    # data.tableNumber = chooseTable(data)
+    # data.timeMax = data.tables[data.tableNumber][2]
+    # data.mode = "ready"
+    pass
 def helpKeyTimerFired(data):
     pass
 def helpKeyRedrawAll(canvas, data):
-    canvas.create_rectangle(0,0,data.width,data.height, fill=data.bgColor) # background
     canvas.create_text(data.width/2, data.height/8, text = "Instructions", 
                        fill=data.fontColor, font = "%s 36" %data.fonts[data.font])
     canvas.create_text(data.width/2, data.height*2/8, 
@@ -315,7 +329,8 @@ def helpKeyRedrawAll(canvas, data):
                        text = "If the arrow is pointing right press the letter i.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
     canvas.create_text(data.width/2, data.height*7/8, 
                        text = "Ready? Press any key to play", fill=data.fontColor, font = "%s 24" %data.fonts[data.font])
-
+    canvas.create_rectangle(data.width/2-100, data.height-250, data.width/2+100, data.height-200, fill="yellow" )
+    canvas.create_text(data.width/2, data.height-225, text="ready")
 
 
 
@@ -328,12 +343,15 @@ def helpKeyRedrawAll(canvas, data):
 
 def readyMousePressed(event, data):
     data.tableNumber = chooseTable(data)
-    data.timeMax = data.tables[data.tableNumber][2]
-    data.mode = "playGame"
+    data.timeMax = 2500 #TODO
+    if (((data.width/2-100) <= event.x <=(data.width/2+100)) and ((data.height-250) <= event.y <=(data.height-200))):
+
+        data.mode = "playGame"
+    pass
 def readyKeyPressed(event, data):
     data.tableNumber = chooseTable(data)
-    data.timeMax = data.tables[data.tableNumber][2]
-    data.mode = "playGame"
+    data.timeMax = 2500 #TODO
+    pass
 def readyTimerFired(data):
     pass
 def readyRedrawAll(canvas, data):
@@ -343,6 +361,9 @@ def readyRedrawAll(canvas, data):
                        text = "Ready? Press any key to play", fill=data.fontColor, font = "%s 24" %data.fonts[data.font])
     for i in range (1, 6): 
         canvas.create_rectangle(100 + i *20, data.height*2/3, 100 + i *40, 20 + data.height*2/3, fill= "yellow")
+
+    canvas.create_rectangle(data.width/2-100, data.height-250, data.width/2+100, data.height-200, fill="yellow" )
+    canvas.create_text(data.width/2, data.height-225, text="ready")
 
 
 
@@ -617,78 +638,6 @@ def customizeRedrawAll(canvas, data):
         canvas.create_text(buffer, data.height/9+430, text = 'Starting Difficulty: (0) 0  (1) 1  (2) 2  (3) 3  (4) 4  (5) 5', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
         canvas.create_text(data.width/2, data.height/9+530, text = "Press Space again to go back to the Main Menu", fill=data.fontColor, font= "%s 28" %data.fonts[data.font])
 
-
-<<<<<<< HEAD
-=======
-def helpDDRMousePressed(event, data):
-    data.tableNumber = chooseTable(data)
-    data.timeMax = 2500 #TODO
-    data.mode = "playGame"
-def helpDDRKeyPressed(event, data):
-    data.tableNumber = chooseTable(data)
-    data.timeMax = 2500 #TODO
-    data.mode = "playGame"
-def helpDDRTimerFired(data):
-    pass
-def helpDDRRedrawAll(canvas, data):
-    canvas.create_rectangle(0,0,data.width,data.height, fill=data.bgColor) # background
-    canvas.create_text(data.width/2, data.height/8, text = "Instructions", fill=data.fontColor, 
-                       font = "%s 36" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*2/8, 
-                       text = "A lot of fish with arrows in them are going to pop up.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*3/8, 
-                       text = "Concentrate only on the middle fish.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*4/8, 
-                       text = "Ignore any other fish!!", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*5/8, 
-                       text = "If the arrow is pointing left step on the left pad.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*6/8, 
-                       text = "If the arrow is pointing right step on the right pad.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*7/8, 
-                       text = "Ready? Press any key to play", fill=data.fontColor, font = "%s 24" %data.fonts[data.font])
->>>>>>> 83976d8ed6659c41cbe75e39a517fb2758ea0a57
-
-
-<<<<<<< HEAD
-
-
-
-
-
-
-
-
-
-
-
-=======
-def helpKeyMousePressed(event, data):
-    data.tableNumber = chooseTable(data)
-    data.timeMax = 2500 #TODO
-    data.mode = "playGame"
-def helpKeyKeyPressed(event, data):
-    data.tableNumber = chooseTable(data)
-    data.timeMax = 2500 #TODO
-    data.mode = "playGame"
-def helpKeyTimerFired(data):
-    pass
-def helpKeyRedrawAll(canvas, data):
-    canvas.create_rectangle(0,0,data.width,data.height, fill=data.bgColor) # background
-    canvas.create_text(data.width/2, data.height/8, text = "Instructions", 
-                       fill=data.fontColor, font = "%s 36" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*2/8, 
-                       text = "A lot of fish with arrows in them are going to pop up.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*3/8, 
-                       text = "Concentrate only on the middle fish.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*4/8, 
-                       text = "Ignore any other fish!!", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*5/8, 
-                       text = "If the arrow is pointing left press the letter e.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*6/8, 
-                       text = "If the arrow is pointing right press the letter i.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*7/8, 
-                       text = "Ready? Press any key to play", fill=data.fontColor, font = "%s 24" %data.fonts[data.font])
->>>>>>> 83976d8ed6659c41cbe75e39a517fb2758ea0a57
 
 #################
 # playGame Mode
