@@ -27,6 +27,7 @@ def init(data):
     # modes can be: mainMenu, playGame, incorrectMode, 
     # correctMode, blankMode, tooLong, gameOver
     data.mode = "mainMenu"
+    data.gameType = None
 
 
 
@@ -71,7 +72,8 @@ def init(data):
             [5,"Incongruent",1500]
         ]
     ]
-    data.level = random.randint(0,4)
+    data.level = 0
+    data.curr_level_color= "red"
 
     # score
     data.correct = 0
@@ -112,9 +114,9 @@ def loadFishImages(data):
 def mousePressed(event, data):
     if (data.mode == "mainMenu"):        mainMenuMousePressed(event, data)
     elif (data.mode == "gameMode"):      gameModeMousePressed(event, data)
-    elif (data.mode == "helpDDR"):       helpDDRMousePressed(event, data)
+    elif (data.mode == "level"):         levelMousePressed(event, data)
     elif (data.mode == "helpKey"):       helpKeyMousePressed(event, data)
-    elif (data.mode == "ready"):         readyMousePressed(event, data)
+    elif (data.mode == "helpDDR"):       helpDDRMousePressed(event, data)
 
 
 
@@ -129,17 +131,13 @@ def mousePressed(event, data):
 def keyPressed(event, data):
     if (data.mode == "mainMenu"):        mainMenuKeyPressed(event, data)
     elif (data.mode == "gameMode"):      gameModeKeyPressed(event, data)
-    elif (data.mode == "instruction_Keyboard"): instructkey_KeyPressed(event, data)
-    elif (data.mode == "instruction_DDR"):      instructDDR_KeyPressed(event, data)
-    elif (data.mode == "ready"):         readyKeyPressed(event, data)
-
-
-
-
-    elif (data.mode == "helpDDR"):       helpDDRKeyPressed(event, data)
+    elif (data.mode == "level"):         levelKeyPressed(event, data)
     elif (data.mode == "helpKey"):       helpKeyKeyPressed(event, data)
-    elif (data.mode == "customize"):     customizeKeyPressed(event, data)
+    elif (data.mode == "helpDDR"):       helpDDRKeyPressed(event, data)
 
+
+
+    elif (data.mode == "customize"):     customizeKeyPressed(event, data)
     elif (data.mode == "playGame"):      playGameKeyPressed(event, data)
     elif (data.mode == "incorrectMode"): incorrectModeKeyPressed(event, data)
     elif (data.mode == "correctMode"):   correctModeKeyPressed(event, data)
@@ -150,18 +148,13 @@ def keyPressed(event, data):
 def timerFired(data):
     if (data.mode == "mainMenu"):        mainMenuTimerFired(data)
     elif (data.mode == "gameMode"):      gameModeTimerFired(data)
-    elif (data.mode == "instruction_Keyboard"): instructkey_TimerFired(data)
-    elif (data.mode == "instruction_DDR"):      instructDDR_TimerFired(data)
-    elif (data.mode == "ready"):         readyTimerFired(data)
-
-
-
-
-
-    elif (data.mode == "helpDDR"):       helpDDRTimerFired(data)
+    elif (data.mode == "level"):         levelTimerFired(data)
     elif (data.mode == "helpKey"):       helpKeyTimerFired(data)
-    elif (data.mode == "customize"):     customizeTimerFired(data)
+    elif (data.mode == "helpDDR"):       helpDDRTimerFired(data)
 
+
+
+    elif (data.mode == "customize"):     customizeTimerFired(data)
     elif (data.mode == "playGame"):      playGameTimerFired(data)
     elif (data.mode == "incorrectMode"): incorrectModeTimerFired(data)
     elif (data.mode == "correctMode"):   correctModeTimerFired(data)
@@ -172,9 +165,9 @@ def timerFired(data):
 def redrawAll(canvas, data):
     if (data.mode == "mainMenu"):        mainMenuRedrawAll(canvas, data)
     elif (data.mode == "gameMode"):      gameModeRedrawAll(canvas, data)
-    elif (data.mode == "helpDDR"):       helpDDRRedrawAll(canvas, data)
+    elif (data.mode == "level"):         levelRedrawAll(canvas, data)
     elif (data.mode == "helpKey"):       helpKeyRedrawAll(canvas, data)
-    elif (data.mode == "ready"):         readyRedrawAll(canvas, data)
+    elif (data.mode == "helpDDR"):       helpDDRRedrawAll(canvas, data)
 
 
 
@@ -218,11 +211,13 @@ def mainMenuRedrawAll(canvas, data):
 ##################
 def gameModeMousePressed(event, data):
     if (((data.width/2-100) <= event.x <=(data.width/2+100)) and ((data.height-250) <= event.y <=(data.height-200))):
+        data.gameType = "Keyboard"
 
-        data.mode= "helpKey"
+        data.mode= "level"
 
     elif (((data.width/2-100) <= event.x <=(data.width/2+100)) and ((data.height-180) <= event.y <=(data.height-130))):
-        data.mode= "helpDDR"
+        data.gameType = "DDR"
+        data.mode= "level"
 
 def gameModeKeyPressed(event, data):
     pass
@@ -246,6 +241,106 @@ def gameModeRedrawAll(canvas, data):
 
 
 
+#################
+# level Mode
+#################
+def levelMousePressed(event, data):
+    data.tableNumber = chooseTable(data)
+    data.timeMax = 2500 #TODO
+    for i in range (0,5):
+        if ((690+ i*60) <= event.x <= (750 + i *60)) and ((data.height*2/3) <= event.y <= (50+ data.height*2/3)):
+            data.curr_level_color = "red"
+            data.level = i
+    if ((40 <= event.x <= 200) and (data.height-200 <= event.y <= data.height-40)):
+        data.mode = "gameMode"
+    elif ((data.width-200 <= event.x <= data.width-40) and (data.height-200 <= event.y <= data.height-40)):
+        if (data.gameType == "Keyboard"):
+            data.mode = "helpKey"
+        elif (data.gameType == "DDR"):
+            data.mode = "helpDDR"
+    
+
+
+
+def levelKeyPressed(event, data):
+    data.tableNumber = chooseTable(data)
+    data.timeMax = 2500 #TODO
+    pass
+def levelTimerFired(data):
+    pass
+def levelRedrawAll(canvas, data):
+    canvas.create_text(data.width/2, data.height/2, text = "Choose level", font = "%s 50" % data.fonts[data.font])
+    # level selection box
+    for i in range (0, 5): 
+        if (data.level == i):
+            data.curr_level_color = "red"
+        else:
+            data.curr_level_color = "yellow"
+        canvas.create_rectangle(690 + i *60, data.height*2/3, 750 + i *60, 50 + data.height*2/3, fill= data.curr_level_color)
+        canvas.create_text(720 + i*60, 25+ data.height*2/3, text= str(i+1))
+
+
+    #previous window button
+    canvas.create_rectangle(40, data.height-200, 200, data.height-40)
+    canvas.create_text(120, data.height-120, text= "previous")
+
+    #next window button 
+    canvas.create_rectangle(data.width-200, data.height-200, data.width-40, data.height-40)
+    canvas.create_text(data.width-120, data.height-120, text= "next")
+
+
+
+
+
+
+#################
+# helpKey Mode
+#################
+
+def helpKeyMousePressed(event, data):
+    # data.tableNumber = chooseTable(data)
+    # data.timeMax = data.tables[data.tableNumber][2]
+    if (((40) <= event.x <=(200)) and ((data.height-200) <= event.y <=(data.height-40))):
+        data.mode= "level"
+    elif (((data.width-120) <= event.x <=(data.width-40)) and ((data.height-200) <= event.y <=(data.height-40))):
+        data.mode= "playGame"
+
+def helpKeyKeyPressed(event, data):
+    # data.tableNumber = chooseTable(data)
+    # data.timeMax = data.tables[data.tableNumber][2]
+    # data.mode = "ready"
+    pass
+def helpKeyTimerFired(data):
+    pass
+def helpKeyRedrawAll(canvas, data):
+    print (data.level)
+    canvas.create_text(data.width/2, data.height/8, text = "Instructions", 
+                       fill=data.fontColor, font = "%s 36" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*2/8, 
+                       text = "A lot of fish with arrows in them are going to pop up.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*3/8, 
+                       text = "Concentrate only on the middle fish.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*4/8, 
+                       text = "Ignore any other fish!!", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*5/8, 
+                       text = "If the arrow is pointing left press the letter e.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*6/8, 
+                       text = "If the arrow is pointing right press the letter i.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
+    canvas.create_text(data.width/2, data.height*7/8, 
+                       text = "Ready? Press any key to play", fill=data.fontColor, font = "%s 24" %data.fonts[data.font])
+    
+
+
+   #previous window button
+    canvas.create_rectangle(40, data.height-200, 200, data.height-40)
+    canvas.create_text(120, data.height-120, text= "previous")
+
+    #next window button 
+    canvas.create_rectangle(data.width-200, data.height-200, data.width-40, data.height-40)
+    canvas.create_text(data.width-120, data.height-120, text= "start")
+
+
+
 
 
 
@@ -259,10 +354,11 @@ def gameModeRedrawAll(canvas, data):
 def helpDDRMousePressed(event, data):
     # data.tableNumber = chooseTable(data)
     # data.timeMax = data.tables[data.tableNumber][2]
-    if (((data.width/2-100) <= event.x <=(data.width/2+100)) and ((data.height-250) <= event.y <=(data.height-200))):
+    if (((40) <= event.x <=(200)) and ((data.height-200) <= event.y <=(data.height-40))):
+        data.mode= "level"
+    elif (((data.width-120) <= event.x <=(data.width-40)) and ((data.height-200) <= event.y <=(data.height-40))):
+        data.mode= "playGame"
 
-        data.mode= "ready"
-        print(data.mode)
 
 def helpDDRKeyPressed(event, data):
     # data.tableNumber = chooseTable(data)
@@ -272,6 +368,7 @@ def helpDDRKeyPressed(event, data):
 def helpDDRTimerFired(data):
     pass
 def helpDDRRedrawAll(canvas, data):
+    print (data.level)
     canvas.create_rectangle(0,0,data.width,data.height, fill=data.bgColor) # background
     canvas.create_text(data.width/2, data.height/8, text = "Instructions", fill=data.fontColor, 
                        font = "%s 36" %data.fonts[data.font])
@@ -288,82 +385,16 @@ def helpDDRRedrawAll(canvas, data):
     canvas.create_text(data.width/2, data.height*6.5/8, 
                        text = "Turn on Enjoyable Software! ", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
     canvas.create_text(data.width/2, data.height*7/8, 
-                       text = "Ready? Press any key to play", fill=data.fontColor, font = "%s 24" %data.fonts[data.font])
-
-    canvas.create_rectangle(data.width/2-100, data.height-250, data.width/2+100, data.height-200, fill="yellow" )
-    canvas.create_text(data.width/2, data.height-225, text="ready")
+                       text = "Ready?", fill=data.fontColor, font = "%s 24" %data.fonts[data.font])
 
 
+   #previous window button
+    canvas.create_rectangle(40, data.height-200, 200, data.height-40)
+    canvas.create_text(120, data.height-120, text= "previous")
 
-
-
-#################
-# helpKey Mode
-#################
-
-def helpKeyMousePressed(event, data):
-    # data.tableNumber = chooseTable(data)
-    # data.timeMax = data.tables[data.tableNumber][2]
-    if (((data.width/2-100) <= event.x <=(data.width/2+100)) and ((data.height-250) <= event.y <=(data.height-200))):
-
-        data.mode= "ready"
-def helpKeyKeyPressed(event, data):
-    # data.tableNumber = chooseTable(data)
-    # data.timeMax = data.tables[data.tableNumber][2]
-    # data.mode = "ready"
-    pass
-def helpKeyTimerFired(data):
-    pass
-def helpKeyRedrawAll(canvas, data):
-    canvas.create_text(data.width/2, data.height/8, text = "Instructions", 
-                       fill=data.fontColor, font = "%s 36" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*2/8, 
-                       text = "A lot of fish with arrows in them are going to pop up.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*3/8, 
-                       text = "Concentrate only on the middle fish.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*4/8, 
-                       text = "Ignore any other fish!!", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*5/8, 
-                       text = "If the arrow is pointing left press the letter e.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*6/8, 
-                       text = "If the arrow is pointing right press the letter i.", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height*7/8, 
-                       text = "Ready? Press any key to play", fill=data.fontColor, font = "%s 24" %data.fonts[data.font])
-    canvas.create_rectangle(data.width/2-100, data.height-250, data.width/2+100, data.height-200, fill="yellow" )
-    canvas.create_text(data.width/2, data.height-225, text="ready")
-
-
-
-
-
-#################
-# ready Mode
-#################
-
-
-def readyMousePressed(event, data):
-    data.tableNumber = chooseTable(data)
-    data.timeMax = 2500 #TODO
-    if (((data.width/2-100) <= event.x <=(data.width/2+100)) and ((data.height-250) <= event.y <=(data.height-200))):
-
-        data.mode = "playGame"
-    pass
-def readyKeyPressed(event, data):
-    data.tableNumber = chooseTable(data)
-    data.timeMax = 2500 #TODO
-    pass
-def readyTimerFired(data):
-    pass
-def readyRedrawAll(canvas, data):
-    canvas.create_text(data.width/2, data.height/2, text = "Choose level", font = "%s 50" % data.fonts[data.font])
-
-    canvas.create_text(data.width/2, data.height*7/8, 
-                       text = "Ready? Press any key to play", fill=data.fontColor, font = "%s 24" %data.fonts[data.font])
-    for i in range (1, 6): 
-        canvas.create_rectangle(100 + i *20, data.height*2/3, 100 + i *40, 20 + data.height*2/3, fill= "yellow")
-
-    canvas.create_rectangle(data.width/2-100, data.height-250, data.width/2+100, data.height-200, fill="yellow" )
-    canvas.create_text(data.width/2, data.height-225, text="ready")
+    #next window button 
+    canvas.create_rectangle(data.width-200, data.height-200, data.width-40, data.height-40)
+    canvas.create_text(data.width-120, data.height-120, text= "start")
 
 
 
@@ -373,270 +404,271 @@ def readyRedrawAll(canvas, data):
 
 
 
+# ##################
+# # customize Mode
+# ##################
 
+# def customizeMousePressed(event, data):
+#     pass
 
-##################
-# customize Mode
-##################
-
-def customizeMousePressed(event, data):
-    pass
-
-def customizeKeyPressed(event, data):
-    if (data.customize == 0): # data.font
-        if (event.char == '1'):
-            data.font = 0
-        elif (event.char == '2'):
-            data.font = 1
-        elif (event.keysym == 'space'):
-            data.customize = 1
-    elif (data.customize == 1): # data.fontColor
-        if (event.char == '1'):
-            data.fontColor = "Black"
-        elif (event.char == '2'):
-            data.fontColor = "Brown"
-        elif (event.char == '3'):
-            data.fontColor = "Purple"
-        elif (event.char == '4'):
-            data.fontColor = "Green"
-        elif (event.char == '5'):
-            data.fontColor = "Yellow"
-        elif (event.char == '6'):
-            data.fontColor = "Red"
-        elif (event.keysym == 'space'):
-            data.customize = 2
-    elif (data.customize == 2): # data.bgColor
-        if (event.char == '1'):
-            data.bgColor = "White"
-        elif (event.char == '2'):
-            data.bgColor = "Brown"
-        elif (event.char == '3'):
-            data.bgColor = "Purple"
-        elif (event.char == '4'):
-            data.bgColor = "Green"
-        elif (event.char == '5'):
-            data.bgColor = "Yellow"
-        elif (event.char == '6'):
-            data.bgColor = "Red"
-        elif (event.keysym == 'space'):
-            data.customize = 3
-    elif (data.customize == 3): # data.correctColor
-        if (event.char == '1'):
-            data.correctColor = "green"
-        elif (event.char == '2'):
-            data.correctColor = "yellow"
-        elif (event.char == '3'):
-            data.correctColor = "red"
-        elif (event.char == '4'):
-            data.correctColor = "black"
-        elif (event.keysym == 'space'):
-            data.customize = 4
-    elif (data.customize == 4): # data.incorrectColor
-        if (event.char == '1'):
-            data.incorrectColor = "green"
-        elif (event.char == '2'):
-            data.incorrectColor = "yellow"
-        elif (event.char == '3'):
-            data.incorrectColor = "red"
-        elif (event.char == '4'):
-            data.incorrectColor = "black"
-        elif (event.keysym == 'space'):
-            data.customize = 5
-    elif (data.customize == 5): # data.tooLongColor
-        if (event.char == '1'):
-            data.tooLongColor = "green"
-        elif (event.char == '2'):
-            data.tooLongColor = "yellow"
-        elif (event.char == '3'):
-            data.tooLongColor = "red"
-        elif (event.char == '4'):
-            data.tooLongColor = "black"
-        elif (event.keysym == 'space'):
-            data.customize = 6
-    elif (data.customize == 6): # data.useNotifs
-        if (event.char == '1'):
-            data.useNotifs = True
-        elif (event.char == '2'):
-            data.useNotifs = False
-        elif (event.keysym == 'space'):
-            data.customize = 7
-    elif (data.customize == 7): #data.timeLowColor
-        if (event.char == '1'):
-            data.timeLowColor = "red"
-        elif (event.char == '2'):
-            data.timeLowColor = "black"
-        elif (event.char == '3'):
-            data.timeLowColor = "green"
-        elif (event.char == '4'):
-            data.timeLowColor = "yellow"
-        elif (event.keysym == 'space'):
-            data.customize = 8
-    elif (data.customize == 8): # data.showUI
-        if (event.char == '1'):
-            data.showUI = True
-        elif (event.char == '2'):
-            data.showUI = False
-        elif (event.keysym == 'space'):
-            data.customize = 9
-    elif (data.customize == 9): #data.maxRounds
-        if (event.char == '1'):
-            data.maxRounds = 10
-        elif (event.char == '2'):
-            data.maxRounds = 15
-        elif (event.char == '3'):
-            data.maxRounds = 20
-        elif (event.char == '4'):
-            data.maxRounds = 30
-        elif (event.char == '5'):
-            data.maxRounds = 50
-        elif (event.keysym == 'space'):
-            data.customize = 10
-    elif (data.customize == 10): # data.maxDifficulty
-        if (event.char == '0'):
-            data.maxDifficulty = 0
-        elif (event.char == '1'):
-            data.maxDifficulty = 1
-        elif (event.char == '2'):
-            data.maxDifficulty = 2
-        elif (event.char == '3'):
-            data.maxDifficulty = 3
-        elif (event.char == '4'):
-            data.maxDifficulty = 4
-        elif (event.char == '5'):
-            data.maxDifficulty = 5
-        elif (event.keysym == 'space'):
-            data.customize = 11
-    elif (data.customize == 11): # data.difficulty
-        if (event.char == '0'):
-            data.difficulty = 0
-        elif (event.char == '1'):
-            data.difficulty = 1
-        elif (event.char == '2'):
-            data.difficulty = 2
-        elif (event.char == '3'):
-            data.difficulty = 3
-        elif (event.char == '4'):
-            data.difficulty = 4
-        elif (event.char == '5'):
-            data.difficulty = 5
-        elif (event.keysym == 'space'):
-            data.customize = 12
-    elif (data.customize == 12):
-        if (event.keysym == 'space'):
-            data.mode = "mainMenu"
+# def customizeKeyPressed(event, data):
+#     if (data.customize == 0): # data.font
+#         if (event.char == '1'):
+#             data.font = 0
+#         elif (event.char == '2'):
+#             data.font = 1
+#         elif (event.keysym == 'space'):
+#             data.customize = 1
+#     elif (data.customize == 1): # data.fontColor
+#         if (event.char == '1'):
+#             data.fontColor = "Black"
+#         elif (event.char == '2'):
+#             data.fontColor = "Brown"
+#         elif (event.char == '3'):
+#             data.fontColor = "Purple"
+#         elif (event.char == '4'):
+#             data.fontColor = "Green"
+#         elif (event.char == '5'):
+#             data.fontColor = "Yellow"
+#         elif (event.char == '6'):
+#             data.fontColor = "Red"
+#         elif (event.keysym == 'space'):
+#             data.customize = 2
+#     elif (data.customize == 2): # data.bgColor
+#         if (event.char == '1'):
+#             data.bgColor = "White"
+#         elif (event.char == '2'):
+#             data.bgColor = "Brown"
+#         elif (event.char == '3'):
+#             data.bgColor = "Purple"
+#         elif (event.char == '4'):
+#             data.bgColor = "Green"
+#         elif (event.char == '5'):
+#             data.bgColor = "Yellow"
+#         elif (event.char == '6'):
+#             data.bgColor = "Red"
+#         elif (event.keysym == 'space'):
+#             data.customize = 3
+#     elif (data.customize == 3): # data.correctColor
+#         if (event.char == '1'):
+#             data.correctColor = "green"
+#         elif (event.char == '2'):
+#             data.correctColor = "yellow"
+#         elif (event.char == '3'):
+#             data.correctColor = "red"
+#         elif (event.char == '4'):
+#             data.correctColor = "black"
+#         elif (event.keysym == 'space'):
+#             data.customize = 4
+#     elif (data.customize == 4): # data.incorrectColor
+#         if (event.char == '1'):
+#             data.incorrectColor = "green"
+#         elif (event.char == '2'):
+#             data.incorrectColor = "yellow"
+#         elif (event.char == '3'):
+#             data.incorrectColor = "red"
+#         elif (event.char == '4'):
+#             data.incorrectColor = "black"
+#         elif (event.keysym == 'space'):
+#             data.customize = 5
+#     elif (data.customize == 5): # data.tooLongColor
+#         if (event.char == '1'):
+#             data.tooLongColor = "green"
+#         elif (event.char == '2'):
+#             data.tooLongColor = "yellow"
+#         elif (event.char == '3'):
+#             data.tooLongColor = "red"
+#         elif (event.char == '4'):
+#             data.tooLongColor = "black"
+#         elif (event.keysym == 'space'):
+#             data.customize = 6
+#     elif (data.customize == 6): # data.useNotifs
+#         if (event.char == '1'):
+#             data.useNotifs = True
+#         elif (event.char == '2'):
+#             data.useNotifs = False
+#         elif (event.keysym == 'space'):
+#             data.customize = 7
+#     elif (data.customize == 7): #data.timeLowColor
+#         if (event.char == '1'):
+#             data.timeLowColor = "red"
+#         elif (event.char == '2'):
+#             data.timeLowColor = "black"
+#         elif (event.char == '3'):
+#             data.timeLowColor = "green"
+#         elif (event.char == '4'):
+#             data.timeLowColor = "yellow"
+#         elif (event.keysym == 'space'):
+#             data.customize = 8
+#     elif (data.customize == 8): # data.showUI
+#         if (event.char == '1'):
+#             data.showUI = True
+#         elif (event.char == '2'):
+#             data.showUI = False
+#         elif (event.keysym == 'space'):
+#             data.customize = 9
+#     elif (data.customize == 9): #data.maxRounds
+#         if (event.char == '1'):
+#             data.maxRounds = 10
+#         elif (event.char == '2'):
+#             data.maxRounds = 15
+#         elif (event.char == '3'):
+#             data.maxRounds = 20
+#         elif (event.char == '4'):
+#             data.maxRounds = 30
+#         elif (event.char == '5'):
+#             data.maxRounds = 50
+#         elif (event.keysym == 'space'):
+#             data.customize = 10
+#     elif (data.customize == 10): # data.maxDifficulty
+#         if (event.char == '0'):
+#             data.maxDifficulty = 0
+#         elif (event.char == '1'):
+#             data.maxDifficulty = 1
+#         elif (event.char == '2'):
+#             data.maxDifficulty = 2
+#         elif (event.char == '3'):
+#             data.maxDifficulty = 3
+#         elif (event.char == '4'):
+#             data.maxDifficulty = 4
+#         elif (event.char == '5'):
+#             data.maxDifficulty = 5
+#         elif (event.keysym == 'space'):
+#             data.customize = 11
+#     elif (data.customize == 11): # data.difficulty
+#         if (event.char == '0'):
+#             data.difficulty = 0
+#         elif (event.char == '1'):
+#             data.difficulty = 1
+#         elif (event.char == '2'):
+#             data.difficulty = 2
+#         elif (event.char == '3'):
+#             data.difficulty = 3
+#         elif (event.char == '4'):
+#             data.difficulty = 4
+#         elif (event.char == '5'):
+#             data.difficulty = 5
+#         elif (event.keysym == 'space'):
+#             data.customize = 12
+#     elif (data.customize == 12):
+#         if (event.keysym == 'space'):
+#             data.mode = "mainMenu"
         
-def customizeTimerFired(data):
-    pass
+# def customizeTimerFired(data):
+#     pass
 
-def customizeRedrawAll(canvas, data):
-    canvas.create_rectangle(0,0,data.width,data.height, fill=data.bgColor) # background
-    canvas.create_text(data.width/2, data.height/10, text = "Customizations", fill=data.fontColor, 
-                       font = "%s 36" %data.fonts[data.font])
-    canvas.create_text(data.width/2, data.height/9+50, text = "Press the corresponding number on the keyboard to customize or the spacebar to continue", fill=data.fontColor, font= "%s 24" %data.fonts[data.font])
-    if (data.customize == 0):
-        canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-    elif (data.customize == 1):
-        canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-    elif (data.customize == 2):
-        canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-    elif (data.customize == 3):
-        canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-    elif (data.customize == 4):
-        canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-    elif (data.customize == 5):
-        canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+250, text = '"Took Too Long!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-    elif (data.customize == 6):
-        canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+250, text = '"Took Too Long!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+280, text = 'Show Correctness?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-    elif (data.customize == 7):
-        canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+250, text = '"Took Too Long!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+280, text = 'Show Correctness?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+310, text = 'Time Warning Color: (1) Red  (2) Black  (3) Green  (4) Yellow', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-    elif (data.customize == 8):
-        canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+250, text = '"Took Too Long!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+280, text = 'Show Correctness?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+310, text = 'Time Warning Color: (1) Red  (2) Black  (3) Green  (4) Yellow', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+340, text = 'Show UI Elements?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-    elif (data.customize == 9):
-        canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+250, text = '"Took Too Long!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+280, text = 'Show Correctness?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+310, text = 'Time Warning Color: (1) Red  (2) Black  (3) Green  (4) Yellow', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+340, text = 'Show UI Elements?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+370, text = 'Max Rounds: (1) 10  (2) 15  (3) 20  (4) 30  (5) 50', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-    elif (data.customize == 10):
-        canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+250, text = '"Took Too Long!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+280, text = 'Show Correctness?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+310, text = 'Time Warning Color: (1) Red  (2) Black  (3) Green  (4) Yellow', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+340, text = 'Show UI Elements?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+370, text = 'Max Rounds: (1) 10  (2) 15  (3) 20  (4) 30  (5) 50', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+400, text = 'Max Difficulty: (0) 0  (1) 1  (2) 2  (3) 3  (4) 4  (5) 5', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-    elif (data.customize == 11):
-        canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+250, text = '"Took Too Long!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+280, text = 'Show Correctness?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+310, text = 'Time Warning Color: (1) Red  (2) Black  (3) Green  (4) Yellow', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+340, text = 'Show UI Elements?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+370, text = 'Max Rounds: (1) 10  (2) 15  (3) 20  (4) 30  (5) 50', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+400, text = 'Max Difficulty: (0) 0  (1) 1  (2) 2  (3) 3  (4) 4  (5) 5', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+430, text = 'Starting Difficulty: (0) 0  (1) 1  (2) 2  (3) 3  (4) 4  (5) 5', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-    elif (data.customize == 12):
-        canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+250, text = '"Took Too Long!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+280, text = 'Show Correctness?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+310, text = 'Time Warning Color: (1) Red  (2) Black  (3) Green  (4) Yellow', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+340, text = 'Show UI Elements?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+370, text = 'Max Rounds: (1) 10  (2) 15  (3) 20  (4) 30  (5) 50', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+400, text = 'Max Difficulty: (0) 0  (1) 1  (2) 2  (3) 3  (4) 4  (5) 5', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(buffer, data.height/9+430, text = 'Starting Difficulty: (0) 0  (1) 1  (2) 2  (3) 3  (4) 4  (5) 5', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
-        canvas.create_text(data.width/2, data.height/9+530, text = "Press Space again to go back to the Main Menu", fill=data.fontColor, font= "%s 28" %data.fonts[data.font])
+# def customizeRedrawAll(canvas, data):
+#     canvas.create_rectangle(0,0,data.width,data.height, fill=data.bgColor) # background
+#     canvas.create_text(data.width/2, data.height/10, text = "Customizations", fill=data.fontColor, 
+#                        font = "%s 36" %data.fonts[data.font])
+#     canvas.create_text(data.width/2, data.height/9+50, text = "Press the corresponding number on the keyboard to customize or the spacebar to continue", fill=data.fontColor, font= "%s 24" %data.fonts[data.font])
+#     if (data.customize == 0):
+#         canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#     elif (data.customize == 1):
+#         canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#     elif (data.customize == 2):
+#         canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#     elif (data.customize == 3):
+#         canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#     elif (data.customize == 4):
+#         canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#     elif (data.customize == 5):
+#         canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+250, text = '"Took Too Long!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#     elif (data.customize == 6):
+#         canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+250, text = '"Took Too Long!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+280, text = 'Show Correctness?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#     elif (data.customize == 7):
+#         canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+250, text = '"Took Too Long!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+280, text = 'Show Correctness?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+310, text = 'Time Warning Color: (1) Red  (2) Black  (3) Green  (4) Yellow', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#     elif (data.customize == 8):
+#         canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+250, text = '"Took Too Long!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+280, text = 'Show Correctness?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+310, text = 'Time Warning Color: (1) Red  (2) Black  (3) Green  (4) Yellow', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+340, text = 'Show UI Elements?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#     elif (data.customize == 9):
+#         canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+250, text = '"Took Too Long!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+280, text = 'Show Correctness?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+310, text = 'Time Warning Color: (1) Red  (2) Black  (3) Green  (4) Yellow', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+340, text = 'Show UI Elements?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+370, text = 'Max Rounds: (1) 10  (2) 15  (3) 20  (4) 30  (5) 50', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#     elif (data.customize == 10):
+#         canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+250, text = '"Took Too Long!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+280, text = 'Show Correctness?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+310, text = 'Time Warning Color: (1) Red  (2) Black  (3) Green  (4) Yellow', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+340, text = 'Show UI Elements?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+370, text = 'Max Rounds: (1) 10  (2) 15  (3) 20  (4) 30  (5) 50', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+400, text = 'Max Difficulty: (0) 0  (1) 1  (2) 2  (3) 3  (4) 4  (5) 5', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#     elif (data.customize == 11):
+#         canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+250, text = '"Took Too Long!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+280, text = 'Show Correctness?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+310, text = 'Time Warning Color: (1) Red  (2) Black  (3) Green  (4) Yellow', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+340, text = 'Show UI Elements?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+370, text = 'Max Rounds: (1) 10  (2) 15  (3) 20  (4) 30  (5) 50', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+400, text = 'Max Difficulty: (0) 0  (1) 1  (2) 2  (3) 3  (4) 4  (5) 5', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+430, text = 'Starting Difficulty: (0) 0  (1) 1  (2) 2  (3) 3  (4) 4  (5) 5', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#     elif (data.customize == 12):
+#         canvas.create_text(buffer, data.height/9+100, text = "Typeface: (1) Helvetica - Sans-serif  (2) Times New Roman - Serif", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+130, text = "Font Color: (1) Black  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+160, text = "Background Color: (1) White  (2) Brown  (3) Purple  (4) Green  (5) Yellow  (6) Red", fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+190, text = '"Correct!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+220, text = '"Incorrect!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+250, text = '"Took Too Long!" Color: (1) Green  (2) Yellow  (3) Red  (4) Black', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+280, text = 'Show Correctness?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+310, text = 'Time Warning Color: (1) Red  (2) Black  (3) Green  (4) Yellow', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+340, text = 'Show UI Elements?: (1) Yes  (2) No', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+370, text = 'Max Rounds: (1) 10  (2) 15  (3) 20  (4) 30  (5) 50', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+400, text = 'Max Difficulty: (0) 0  (1) 1  (2) 2  (3) 3  (4) 4  (5) 5', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(buffer, data.height/9+430, text = 'Starting Difficulty: (0) 0  (1) 1  (2) 2  (3) 3  (4) 4  (5) 5', fill=data.fontColor, font= "%s 18" %data.fonts[data.font], anchor=W)
+#         canvas.create_text(data.width/2, data.height/9+530, text = "Press Space again to go back to the Main Menu", fill=data.fontColor, font= "%s 28" %data.fonts[data.font])
+
+
+
 
 
 #################
