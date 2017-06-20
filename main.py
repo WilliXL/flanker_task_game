@@ -3,8 +3,8 @@
 # added Nick
 
 # Global variables: canvas width and height
-canvasWidth = 1660
-canvasHeight = 980
+canvasWidth = 830
+canvasHeight = 490
 buffer = 40
 
 from tkinter import *
@@ -680,9 +680,9 @@ def getPauseTime(data):
 
 def checkAnswer(direction, data):
     if (data.conf[0] % 2 == 0): # it's left
-        if (direction == "Left"): return True
-    if (data.conf[0] % 2 == 1): # it's right
         if (direction == "Right"): return True
+    if (data.conf[0] % 2 == 1): # it's right
+        if (direction == "Left"): return True
     return False
 
 def playGameMousePressed(event, data):
