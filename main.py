@@ -29,7 +29,7 @@ def init(data):
     data.mode = "mainMenu"
     data.gameType = None
 
-
+    data.conf = []
 
     data.round = 0
 
@@ -679,9 +679,11 @@ def getPauseTime(data):
     return 1
 
 def checkAnswer(direction, data):
-    if (direction == data.tables[data.tableNumber][3]):
-        return True
-    else: return False
+    if (data.conf[0] % 2 == 0): # it's left
+        if (direction == "Left"): return True
+    if (data.conf[0] % 2 == 1): # it's right
+        if (direction == "Right"): return True
+    return False
 
 def playGameMousePressed(event, data):
     pass
@@ -712,12 +714,6 @@ def playGameTimerFired(data):
         data.incorrect += 1
         data.mode = "tooLong"
 
-def drawFishLeft(canvas, x0, y0, x1, y1):
-    canvas.create_text(x0,y0,x1,y1, text="E")
-
-def drawFishRight(canvas, x0, y0, x1, y1):
-    canvas.create_text(x0,y0,x1,y1, text="I")
-
 def playGameRedrawAll(canvas, data):
     color = "black"
     if (data.timeRemaining > data.timeMax // 2):
@@ -744,13 +740,16 @@ def playGameRedrawAll(canvas, data):
     choose = -1
     if (conf[0] == 1): # it's neutral
         choose = random.randint(0,1)
+        data.conf = [choose]
         image = data.images[choose]
     if (conf[0] == 5): # not netural
         if (conf[1] == "Congruent"):
             choose = random.randint(2,3)
+            data.conf = [choose]
             image = data.images[choose]
         if (conf[1] == "Incongruent"):
             choose = random.randint(4,5)
+            data.conf = [choose]
             image = data.images[choose]
 
     canvas.create_image(data.width/2, data.height/2, image=image)
