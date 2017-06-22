@@ -29,14 +29,16 @@ def init(data):
     data.mode = "mainMenu"
     data.gameType = None
 
+    data.configurations = []
     data.conf = []
+    data.choose = -1
 
     data.round = 0
 
     # difficulty
     data.difficulty = 0
     data.maxDifficulty = 0
-    data.timeMax = 2500 # milliseconds
+    data.timeMax = 250 # milliseconds
                         # based on Davidson et al.
     data.timeRemaining = data.timeMax # starting out at timeMax, to be reset every attempt
 
@@ -106,6 +108,24 @@ def loadFishImages(data):
     data.images.append(PhotoImage(file="CL.gif"))
     data.images.append(PhotoImage(file="ICR.gif"))
     data.images.append(PhotoImage(file="ICL.gif"))
+
+def chooseImage(data):
+    data.configurations = data.tables[data.level]
+    data.conf = random.choice(data.configurations)
+    if (data.conf[0] == 1): # it's neutral
+        data.choose = random.randint(0,1)
+        data.conf = [data.choose]
+        data.image = data.images[data.choose]
+    if (data.conf[0] == 5): # not netural
+        if (data.conf[1] == "Congruent"):
+            data.choose = random.randint(2,3)
+            data.conf = [data.choose]
+            data.image = data.images[data.choose]
+        if (data.conf[1] == "Incongruent"):
+            data.choose = random.randint(4,5)
+            data.conf = [data.choose]
+            data.image = data.images[data.choose]
+    return data.image
 
 ########################
 # mode dispatcher
@@ -303,6 +323,7 @@ def helpKeyMousePressed(event, data):
     if (((40) <= event.x <=(200)) and ((data.height-200) <= event.y <=(data.height-40))):
         data.mode= "level"
     elif (((data.width-120) <= event.x <=(data.width-40)) and ((data.height-200) <= event.y <=(data.height-40))):
+        data.image = chooseImage(data)
         data.mode= "playGame"
 
 def helpKeyKeyPressed(event, data):
@@ -313,7 +334,6 @@ def helpKeyKeyPressed(event, data):
 def helpKeyTimerFired(data):
     pass
 def helpKeyRedrawAll(canvas, data):
-    print (data.level)
     canvas.create_text(data.width/2, data.height/8, text = "Instructions", 
                        fill=data.fontColor, font = "%s 36" %data.fonts[data.font])
     canvas.create_text(data.width/2, data.height*2/8, 
@@ -357,6 +377,7 @@ def helpDDRMousePressed(event, data):
     if (((40) <= event.x <=(200)) and ((data.height-200) <= event.y <=(data.height-40))):
         data.mode= "level"
     elif (((data.width-120) <= event.x <=(data.width-40)) and ((data.height-200) <= event.y <=(data.height-40))):
+        data.image = chooseImage(data)
         data.mode= "playGame"
 
 
@@ -368,7 +389,6 @@ def helpDDRKeyPressed(event, data):
 def helpDDRTimerFired(data):
     pass
 def helpDDRRedrawAll(canvas, data):
-    print (data.level)
     canvas.create_rectangle(0,0,data.width,data.height, fill=data.bgColor) # background
     canvas.create_text(data.width/2, data.height/8, text = "Instructions", fill=data.fontColor, 
                        font = "%s 36" %data.fonts[data.font])
@@ -729,11 +749,12 @@ def playGameRedrawAll(canvas, data):
         canvas.create_text(buffer, buffer+40, text = "Number Incorrect: " + str(data.incorrect), fill=data.fontColor, anchor=W)
 
     ###############
-    # Actual game
+    # Display Fish
     ###############
 
     # if it's neutral (only 1 fish in the entire matrix)
     # data.images = [NR,NL,CR,CL,ICR,ICL]
+<<<<<<< HEAD
     # data.level = random.randint(0,4)
     configurations = data.tables[data.level]
     conf = random.choice(configurations)
@@ -754,6 +775,11 @@ def playGameRedrawAll(canvas, data):
             image = data.images[choose]
 
     canvas.create_image(data.width/2, data.height/2, image=image)
+=======
+    print (data.choose)
+
+    canvas.create_image(data.width/2, data.height/2, image=data.image)
+>>>>>>> 4459865e04f2394ff70af852b0827a022491c19f
         
 #######################
 # incorrectMode Mode
@@ -772,6 +798,7 @@ def incorrectModeTimerFired(data):
             data.pauseTime = getPauseTime(data)
             data.tableNumber = chooseTable(data)
             data.timeRemaining = data.timeMax
+            data.image = chooseImage(data)
             data.mode = "playGame"
 
 def incorrectModeRedrawAll(canvas, data):
@@ -797,6 +824,7 @@ def correctModeTimerFired(data):
             data.pauseTime = getPauseTime(data)
             data.tableNumber = chooseTable(data)
             data.timeRemaining = data.timeMax
+            data.image = chooseImage(data)
             data.mode = "playGame"
 
 def correctModeRedrawAll(canvas, data):
@@ -820,6 +848,7 @@ def tooLongTimerFired(data):
     if (data.pauseTime < 1):
         data.pauseTime = 1
         data.timeRemaining = data.timeMax
+        data.image = chooseImage(data)
         data.mode = "playGame"
 def tooLongRedrawAll(canvas, data):
     canvas.create_rectangle(0,0,data.width,data.height, fill=data.bgColor)
@@ -885,7 +914,7 @@ def run(width=canvasWidth, height=canvasHeight):
     data = Struct()
     data.width = width
     data.height = height
-    data.timerDelay = 1000 # milliseconds
+    data.timerDelay = 1 # milliseconds
     root = Tk()
     init(data)
     # create the root and the canvas
