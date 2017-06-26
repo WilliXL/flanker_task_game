@@ -7,7 +7,7 @@ canvasWidth = 1660
 canvasHeight = 980
 buffer = 40
 
-from tkinter import *
+from Tkinter import *
 import random
 
 
@@ -751,9 +751,32 @@ def playGameRedrawAll(canvas, data):
 
     # if it's neutral (only 1 fish in the entire matrix)
     # data.images = [NR,NL,CR,CL,ICR,ICL]
+<<<<<<< HEAD
+    # data.level = random.randint(0,4)
+    configurations = data.tables[data.level]
+    conf = random.choice(configurations)
+    print (conf, "CCC")
+    choose = -1
+    if (conf[0] == 1): # it's neutral
+        choose = random.randint(0,1)
+        data.conf = [choose]
+        image = data.images[choose]
+    if (conf[0] == 5): # not netural
+        if (conf[1] == "Congruent"):
+            choose = random.randint(2,3)
+            data.conf = [choose]
+            image = data.images[choose]
+        if (conf[1] == "Incongruent"):
+            choose = random.randint(4,5)
+            data.conf = [choose]
+            image = data.images[choose]
+
+    canvas.create_image(data.width/2, data.height/2, image=image)
+=======
     print (data.choose)
 
     canvas.create_image(data.width/2, data.height/2, image=data.image)
+>>>>>>> 4459865e04f2394ff70af852b0827a022491c19f
         
 #######################
 # incorrectMode Mode
