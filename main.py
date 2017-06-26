@@ -3,8 +3,8 @@
 # added Nick
 
 # Global variables: canvas width and height
-canvasWidth = 830
-canvasHeight = 490
+canvasWidth = 1660
+canvasHeight = 980
 buffer = 40
 
 from tkinter import *
@@ -114,16 +114,13 @@ def chooseImage(data):
     data.conf = random.choice(data.configurations)
     if (data.conf[0] == 1): # it's neutral
         data.choose = random.randint(0,1)
-        data.conf = [data.choose]
         data.image = data.images[data.choose]
     if (data.conf[0] == 5): # not netural
         if (data.conf[1] == "Congruent"):
             data.choose = random.randint(2,3)
-            data.conf = [data.choose]
             data.image = data.images[data.choose]
         if (data.conf[1] == "Incongruent"):
             data.choose = random.randint(4,5)
-            data.conf = [data.choose]
             data.image = data.images[data.choose]
     return data.image
 
