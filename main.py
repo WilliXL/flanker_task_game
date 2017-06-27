@@ -3,11 +3,11 @@
 # added Nick
 
 # Global variables: canvas width and height
-canvasWidth = 830
-canvasHeight = 490
+canvasWidth = 1660
+canvasHeight = 980
 buffer = 40
 
-from Tkinter import *
+from tkinter import *
 import random
 
 
@@ -99,6 +99,7 @@ def init(data):
     data.font = 0
     data.maxRounds = 10
     data.showUI = True
+    data.e =None
 
 def loadFishImages(data):
     data.images = []
@@ -184,7 +185,7 @@ def timerFired(data):
 
 def redrawAll(canvas, data):
     if (data.mode == "mainMenu"):        mainMenuRedrawAll(canvas, data)
-    elif (data.mode == "gameMode"):      gameModeRedrawAll(canvas, data)
+    elif (data.mode == "gameMode"):    gameModeRedrawAll(canvas, data)
     elif (data.mode == "level"):         levelRedrawAll(canvas, data)
     elif (data.mode == "helpKey"):       helpKeyRedrawAll(canvas, data)
     elif (data.mode == "helpDDR"):       helpDDRRedrawAll(canvas, data)
@@ -322,9 +323,11 @@ def helpKeyMousePressed(event, data):
     # data.timeMax = data.tables[data.tableNumber][2]
     if (((40) <= event.x <=(200)) and ((data.height-200) <= event.y <=(data.height-40))):
         data.mode= "level"
-    elif (((data.width-120) <= event.x <=(data.width-40)) and ((data.height-200) <= event.y <=(data.height-40))):
-        data.image = chooseImage(data)
+    elif ((data.width-200 <= event.x <= data.width-40) and (data.height-200 <= event.y <= data.height-40)):
+
         data.mode= "playGame"
+        data.image = chooseImage(data)
+
 
 def helpKeyKeyPressed(event, data):
     # data.tableNumber = chooseTable(data)
@@ -349,7 +352,6 @@ def helpKeyRedrawAll(canvas, data):
     canvas.create_text(data.width/2, data.height*7/8, 
                        text = "Ready? Press any key to play", fill=data.fontColor, font = "%s 24" %data.fonts[data.font])
     
-
 
    #previous window button
     canvas.create_rectangle(40, data.height-200, 200, data.height-40)
@@ -376,15 +378,15 @@ def helpDDRMousePressed(event, data):
     # data.timeMax = data.tables[data.tableNumber][2]
     if (((40) <= event.x <=(200)) and ((data.height-200) <= event.y <=(data.height-40))):
         data.mode= "level"
-    elif (((data.width-120) <= event.x <=(data.width-40)) and ((data.height-200) <= event.y <=(data.height-40))):
-        data.image = chooseImage(data)
+    elif ((data.width-200 <= event.x <= data.width-i40) and (data.height-200 <= event.y <= data.height-40)):
+
+    # elif ((data.width-120) <= event.x <=(data.width-40)) and ((data.height-200) <= event.y <=(data.height-40)):
         data.mode= "playGame"
+        data.image = chooseImage(data)
+
 
 
 def helpDDRKeyPressed(event, data):
-    # data.tableNumber = chooseTable(data)
-    # data.timeMax = data.tables[data.tableNumber][2]
-    # data.mode = "ready"
     pass
 def helpDDRTimerFired(data):
     pass
@@ -406,8 +408,6 @@ def helpDDRRedrawAll(canvas, data):
                        text = "Turn on Enjoyable Software! ", fill=data.fontColor, font = "%s 18" %data.fonts[data.font])
     canvas.create_text(data.width/2, data.height*7/8, 
                        text = "Ready?", fill=data.fontColor, font = "%s 24" %data.fonts[data.font])
-
-
    #previous window button
     canvas.create_rectangle(40, data.height-200, 200, data.height-40)
     canvas.create_text(120, data.height-120, text= "previous")
@@ -754,7 +754,6 @@ def playGameRedrawAll(canvas, data):
 
     # if it's neutral (only 1 fish in the entire matrix)
     # data.images = [NR,NL,CR,CL,ICR,ICL]
-<<<<<<< HEAD
     # data.level = random.randint(0,4)
     configurations = data.tables[data.level]
     conf = random.choice(configurations)
@@ -775,11 +774,9 @@ def playGameRedrawAll(canvas, data):
             image = data.images[choose]
 
     canvas.create_image(data.width/2, data.height/2, image=image)
-=======
     print (data.choose)
 
     canvas.create_image(data.width/2, data.height/2, image=data.image)
->>>>>>> 4459865e04f2394ff70af852b0827a022491c19f
         
 #######################
 # incorrectMode Mode
@@ -915,8 +912,13 @@ def run(width=canvasWidth, height=canvasHeight):
     data.width = width
     data.height = height
     data.timerDelay = 1 # milliseconds
+    data.e = None
     root = Tk()
+    
     init(data)
+
+
+
     # create the root and the canvas
     canvas = Canvas(root, width=data.width, height=data.height)
     canvas.pack()
@@ -928,6 +930,9 @@ def run(width=canvasWidth, height=canvasHeight):
     timerFiredWrapper(canvas, data)
     # and launch the app
     root.mainloop()  # blocks until window is closed
+
+
+
     print("bye!")
 
 run(canvasWidth, canvasHeight)
