@@ -111,6 +111,7 @@ def loadFishImages(data):
     data.images.append(PhotoImage(file="ICL.gif"))
 
 def chooseImage(data):
+    print (data.level)
     data.configurations = data.tables[data.level]
     data.conf = random.choice(data.configurations)
     if (data.conf[0] == 1): # it's neutral
@@ -712,27 +713,26 @@ def playGameKeyPressed(event, data):
         if (checkAnswer("Left",data)):
             data.correct += 1
             data.round += 1
-            if (data.correct % 3 == 0 and data.level <= 5): # won't check until at least gotten one correct
+            if (data.correct % 3 == 0 and data.level < 4): # won't check until at least gotten one correct
                 data.level += 1
             data.mode = "correctMode"
         else:
             data.incorrect += 1
             data.round += 1
-            if (data.incorrect % 2 == 0 and data.level >= 0):
+            if (data.incorrect % 2 == 0 and data.level > 0):
                 data.level -= 1
             data.mode = "incorrectMode"
     if (event.char == "i" or False):
         if (checkAnswer("Right",data)):
             data.correct += 1
             data.round += 1
-            print (data.correct % 3 == 0 and data.level <= 5)
-            if (data.correct % 3 == 0 and data.level <= 5): # won't check until at least gotten one correct
+            if (data.correct % 3 == 0 and data.level < 4): # won't check until at least gotten one correct
                 data.level += 1
             data.mode = "correctMode"
         else:
             data.incorrect += 1
             data.round += 1
-            if (data.incorrect % 2 == 0 and data.level >= 0):
+            if (data.incorrect % 2 == 0 and data.level > 0):
                 data.level -= 1
             data.mode = "incorrectMode"
 
@@ -747,9 +747,9 @@ def playGameRedrawAll(canvas, data):
     if (data.timeRemaining > data.timeMax // 2):
         color = "black"
     else: color = data.timeLowColor
-    canvas.create_rectangle(0,0,data.width,data.height, fill=data.bgColor) # background
+    canvas.create_image(data.width/2, data.height/2, image=data.image)
     # UI elements
-    canvas.create_text(data.width-buffer-112, data.height-buffer, text="Time Left: " + str(data.timeRemaining), fill=color, anchor=W)
+    canvas.create_text(data.width-buffer-112, data.height-2*buffer, text="Time Left: " + str(data.timeRemaining), fill=color, anchor=W)
     # always show the time remaning though
 
     if (data.showUI):
@@ -764,7 +764,6 @@ def playGameRedrawAll(canvas, data):
     # data.images = [NR,NL,CR,CL,ICR,ICL]
     # data.level = random.randint(0,4)
 
-    canvas.create_image(data.width/2, data.height/2, image=data.image)
         
 #######################
 # incorrectMode Mode
@@ -831,7 +830,7 @@ def tooLongTimerFired(data):
         data.mode = "gameOver"
     data.pauseTime -= 1
     if (data.pauseTime < 1):
-        data.pauseTime = 1
+        data.pauseTime = getPauseTime(data)
         data.timeRemaining = data.timeMax
         data.image = chooseImage(data)
         data.mode = "playGame"
