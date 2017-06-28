@@ -24,6 +24,12 @@ def init(data):
     # load the fish images
     loadFishImages(data)
 
+    # init the dataframe
+    data.df = pd.DataFrame()
+    data.variables = ["rt", "level", "trial", "conf", "response"]
+    data.data_dict = dict((var,[]) for var in data.variables)
+    data.username = "nick"
+
     # splash screen, start with main menu
     # modes can be: mainMenu, playGame, incorrectMode, 
     # correctMode, blankMode, tooLong, gameOver
@@ -34,7 +40,7 @@ def init(data):
     data.conf = []
     data.choose = -1
 
-    data.round = 0
+    data.round = 1
 
     # difficulty
     data.difficulty = 0
@@ -709,14 +715,20 @@ def playGameMousePressed(event, data):
     pass
 
 def playGameKeyPressed(event, data):
+    data.data_dict["rt"].append((data.timeMax - data.timeRemaining) * 100) # convert to milliseconds
+    data.data_dict["level"].append(data.level + 1) # since the implementation's level starts at 0
+    data.data_dict["trial"].append(data.round)
+    data.data_dict["conf"].append(data.conf[1])
     if (event.char == 'E' or False):
         if (checkAnswer("Left",data)):
+            data.data_dict["response"].append("correct")
             data.correct += 1
             data.round += 1
             if (data.correct % 3 == 0 and data.level < 4): # won't check until at least gotten one correct
                 data.level += 1
             data.mode = "correctMode"
         else:
+            data.data_dict["response"].append("incorrect")
             data.incorrect += 1
             data.round += 1
             if (data.incorrect % 2 == 0 and data.level > 0):
@@ -724,12 +736,14 @@ def playGameKeyPressed(event, data):
             data.mode = "incorrectMode"
     if (event.char == "I" or False):
         if (checkAnswer("Right",data)):
+            data.data_dict["response"].append("correct")
             data.correct += 1
             data.round += 1
             if (data.correct % 3 == 0 and data.level < 4): # won't check until at least gotten one correct
                 data.level += 1
             data.mode = "correctMode"
         else:
+            data.data_dict["response"].append("incorrect")
             data.incorrect += 1
             data.round += 1
             if (data.incorrect % 2 == 0 and data.level > 0):
@@ -739,6 +753,11 @@ def playGameKeyPressed(event, data):
 def playGameTimerFired(data):
     data.timeRemaining -= 1
     if (data.timeRemaining < 1):
+        data.data_dict["rt"].append((data.timeMax - data.timeRemaining) * 100) # convert to milliseconds
+        data.data_dict["level"].append(data.level + 1) # since the implementation's level starts at 0
+        data.data_dict["trial"].append(data.round)
+        data.data_dict["conf"].append(data.conf[1])
+        data.data_dict["response"].append("tooLong")
         data.incorrect += 1
         data.mode = "tooLong"
 
@@ -774,6 +793,8 @@ def incorrectModeKeyPressed(event, data):
     pass
 def incorrectModeTimerFired(data):
     if (not (data.round <= data.maxRounds)):
+        data.df = pd.DataFrame.from_dict(data.data_dict)
+        data.df.to_csv(data.username + ".csv")
         data.mode = "gameOver"
     else:
         data.pauseTime -= 1
@@ -800,6 +821,8 @@ def correctModeKeyPressed(event, data):
     pass
 def correctModeTimerFired(data):
     if (not (data.round < data.maxRounds)):
+        data.df = pd.DataFrame.from_dict(data.data_dict)
+        data.df.to_csv(data.username + ".csv")
         data.mode = "gameOver"
     else:
         data.pauseTime -= 1
@@ -826,6 +849,8 @@ def tooLongKeyPressed(event, data):
     pass
 def tooLongTimerFired(data):
     if (not (data.round < data.maxRounds)):
+        data.df = pd.DataFrame.from_dict(data.data_dict)
+        data.df.to_csv(data.username + ".csv")
         data.mode = "gameOver"
     data.pauseTime -= 1
     if (data.pauseTime < 1):
