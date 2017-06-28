@@ -9,7 +9,7 @@ buffer = 40
 
 from tkinter import *
 import random
-# import pandas as pd # for reading and writing the csv files
+import pandas as pd # for reading and writing the csv files
 
 
 def chooseTable(data):
@@ -709,7 +709,7 @@ def playGameMousePressed(event, data):
     pass
 
 def playGameKeyPressed(event, data):
-    if (event.char == 'e' or False):
+    if (event.char == 'E' or False):
         if (checkAnswer("Left",data)):
             data.correct += 1
             data.round += 1
@@ -722,7 +722,7 @@ def playGameKeyPressed(event, data):
             if (data.incorrect % 2 == 0 and data.level > 0):
                 data.level -= 1
             data.mode = "incorrectMode"
-    if (event.char == "i" or False):
+    if (event.char == "I" or False):
         if (checkAnswer("Right",data)):
             data.correct += 1
             data.round += 1
