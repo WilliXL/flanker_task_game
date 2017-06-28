@@ -9,6 +9,7 @@ buffer = 40
 
 from tkinter import *
 import random
+# import pandas as pd # for reading and writing the csv files
 
 
 def chooseTable(data):
@@ -38,7 +39,7 @@ def init(data):
     # difficulty
     data.difficulty = 0
     data.maxDifficulty = 0
-    data.timeMax = 250 # milliseconds
+    data.timeMax = 25 # milliseconds / 10
                         # based on Davidson et al.
     data.timeRemaining = data.timeMax # starting out at timeMax, to be reset every attempt
 
@@ -47,31 +48,31 @@ def init(data):
     data.tables = [
         # level 1
         [
-            [1,"Congruent",2500]
+            [1,"Congruent",25]
         ],
         
         # level 2
         [
-            [5,"Congruent",2500],
-            [1,"Congruent",2000]
+            [5,"Congruent",25],
+            [1,"Congruent",20]
         ],
 
         # level 3
         [
-            [5,"Incongruent",2500],
-            [5,"Congruent",2000],
-            [1, "Congruent",1500]
+            [5,"Incongruent",25],
+            [5,"Congruent",20],
+            [1, "Congruent",15]
         ],
 
         # level 4
         [
-            [5,"Incongruent",2000],
-            [5,"Congruent",1500]
+            [5,"Incongruent",20],
+            [5,"Congruent",15]
         ],
 
         # level 5
         [
-            [5,"Incongruent",1500]
+            [5,"Incongruent",15]
         ]
     ]
     data.level = 0
@@ -84,7 +85,7 @@ def init(data):
 
     # misc
     data.paused = False
-    data.pauseTime = 1
+    data.pauseTime = 10
 
     #customization
     data.customize = 0
@@ -97,7 +98,7 @@ def init(data):
     data.useNotifs = True
     data.fonts = ["Helvetica", "Times"]
     data.font = 0
-    data.maxRounds = 10
+    data.maxRounds = 20
     data.showUI = True
     data.e =None
 
@@ -111,20 +112,18 @@ def loadFishImages(data):
     data.images.append(PhotoImage(file="ICL.gif"))
 
 def chooseImage(data):
+    print (data.level)
     data.configurations = data.tables[data.level]
     data.conf = random.choice(data.configurations)
     if (data.conf[0] == 1): # it's neutral
         data.choose = random.randint(0,1)
-        data.conf = [data.choose]
         data.image = data.images[data.choose]
-    if (data.conf[0] == 5): # not netural
+    elif (data.conf[0] == 5): # not netural
         if (data.conf[1] == "Congruent"):
             data.choose = random.randint(2,3)
-            data.conf = [data.choose]
             data.image = data.images[data.choose]
         if (data.conf[1] == "Incongruent"):
             data.choose = random.randint(4,5)
-            data.conf = [data.choose]
             data.image = data.images[data.choose]
     return data.image
 
@@ -267,11 +266,13 @@ def gameModeRedrawAll(canvas, data):
 #################
 def levelMousePressed(event, data):
     data.tableNumber = chooseTable(data)
-    data.timeMax = 2500 #TODO
+    data.timeMax = 25 #TODO
     for i in range (0,5):
         if ((690+ i*60) <= event.x <= (750 + i *60)) and ((data.height*2/3) <= event.y <= (50+ data.height*2/3)):
             data.curr_level_color = "red"
             data.level = i
+            data.configurations = data.tables[data.level]
+            data.conf = random.choice(data.configurations)
     if ((40 <= event.x <= 200) and (data.height-200 <= event.y <= data.height-40)):
         data.mode = "gameMode"
     elif ((data.width-200 <= event.x <= data.width-40) and (data.height-200 <= event.y <= data.height-40)):
@@ -279,13 +280,12 @@ def levelMousePressed(event, data):
             data.mode = "helpKey"
         elif (data.gameType == "DDR"):
             data.mode = "helpDDR"
-    
 
 
 
 def levelKeyPressed(event, data):
     data.tableNumber = chooseTable(data)
-    data.timeMax = 2500 #TODO
+    data.timeMax = 25 #TODO
     pass
 def levelTimerFired(data):
     pass
@@ -696,12 +696,12 @@ def helpDDRRedrawAll(canvas, data):
 #################
 
 def getPauseTime(data):
-    return 1
+    return 10
 
 def checkAnswer(direction, data):
-    if (data.conf[0] % 2 == 0): # it's left
+    if (data.choose % 2 == 0): # it's left
         if (direction == "Right"): return True
-    if (data.conf[0] % 2 == 1): # it's right
+    if (data.choose % 2 == 1): # it's right
         if (direction == "Left"): return True
     return False
 
@@ -713,19 +713,27 @@ def playGameKeyPressed(event, data):
         if (checkAnswer("Left",data)):
             data.correct += 1
             data.round += 1
+            if (data.correct % 3 == 0 and data.level < 4): # won't check until at least gotten one correct
+                data.level += 1
             data.mode = "correctMode"
         else:
             data.incorrect += 1
             data.round += 1
+            if (data.incorrect % 2 == 0 and data.level > 0):
+                data.level -= 1
             data.mode = "incorrectMode"
     if (event.char == "i" or False):
         if (checkAnswer("Right",data)):
             data.correct += 1
             data.round += 1
+            if (data.correct % 3 == 0 and data.level < 4): # won't check until at least gotten one correct
+                data.level += 1
             data.mode = "correctMode"
         else:
             data.incorrect += 1
             data.round += 1
+            if (data.incorrect % 2 == 0 and data.level > 0):
+                data.level -= 1
             data.mode = "incorrectMode"
 
 def playGameTimerFired(data):
@@ -739,9 +747,9 @@ def playGameRedrawAll(canvas, data):
     if (data.timeRemaining > data.timeMax // 2):
         color = "black"
     else: color = data.timeLowColor
-    canvas.create_rectangle(0,0,data.width,data.height, fill=data.bgColor) # background
+    canvas.create_image(data.width/2, data.height/2, image=data.image)
     # UI elements
-    canvas.create_text(data.width-buffer-112, data.height-buffer, text="Time Left: " + str(data.timeRemaining), fill=color, anchor=W)
+    canvas.create_text(data.width-buffer-112, data.height-2*buffer, text="Time Left: " + str(data.timeRemaining), fill=color, anchor=W)
     # always show the time remaning though
 
     if (data.showUI):
@@ -755,29 +763,7 @@ def playGameRedrawAll(canvas, data):
     # if it's neutral (only 1 fish in the entire matrix)
     # data.images = [NR,NL,CR,CL,ICR,ICL]
     # data.level = random.randint(0,4)
-    configurations = data.tables[data.level]
-    conf = random.choice(configurations)
-    print (conf, "CCC")
-    choose = -1
-    if (conf[0] == 1): # it's neutral
-        choose = random.randint(0,1)
-        data.conf = [choose]
-        image = data.images[choose]
-    if (conf[0] == 5): # not netural
-        if (conf[1] == "Congruent"):
-            choose = random.randint(2,3)
-            data.conf = [choose]
-            image = data.images[choose]
-        if (conf[1] == "Incongruent"):
-            choose = random.randint(4,5)
-            data.conf = [choose]
-            image = data.images[choose]
 
-    canvas.create_image(data.width/2, data.height/2, image=image)
-    print (data.choose)
-
-    canvas.create_image(data.width/2, data.height/2, image=data.image)
-        
 #######################
 # incorrectMode Mode
 #######################
@@ -794,7 +780,7 @@ def incorrectModeTimerFired(data):
         if (data.pauseTime < 1):
             data.pauseTime = getPauseTime(data)
             data.tableNumber = chooseTable(data)
-            data.timeRemaining = data.timeMax
+            data.timeRemaining = data.conf[2]
             data.image = chooseImage(data)
             data.mode = "playGame"
 
@@ -820,7 +806,7 @@ def correctModeTimerFired(data):
         if (data.pauseTime < 1):
             data.pauseTime = getPauseTime(data)
             data.tableNumber = chooseTable(data)
-            data.timeRemaining = data.timeMax
+            data.timeRemaining = data.conf[2]
             data.image = chooseImage(data)
             data.mode = "playGame"
 
@@ -843,7 +829,7 @@ def tooLongTimerFired(data):
         data.mode = "gameOver"
     data.pauseTime -= 1
     if (data.pauseTime < 1):
-        data.pauseTime = 1
+        data.pauseTime = getPauseTime(data)
         data.timeRemaining = data.timeMax
         data.image = chooseImage(data)
         data.mode = "playGame"
